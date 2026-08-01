@@ -5,11 +5,11 @@ Main command: `/ridecounter`
 [Hangar Page](https://hangar.papermc.io/MrTibo1/TC-Ridecounters)
 
 *Depends on*:
+- BKCommonLib (required)
 - TrainCarts
-- BKCommonLib
 
 ## Features
-1. Display top ridecounters on map displays  
+1. Display top ridecounters on map displays
 2. Dynamic and flexible custom backgrounds for map displays ([.mcmeta format](https://minecraft.wiki/w/Resource_pack#GUI) for tiling, stretching or nine-slice)
 3. TrainCarts signaction to increase the ridecount of every player in a train
 

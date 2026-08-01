@@ -8,8 +8,10 @@ import be.mrtibo.ridecounters.concurrency.AsyncDispatcher
 import be.mrtibo.ridecounters.concurrency.MainThreadDispatcher
 import be.mrtibo.ridecounters.data.Database
 import be.mrtibo.ridecounters.data.DatabaseUpgrader
-import be.mrtibo.ridecounters.events.JoinEvent
-import be.mrtibo.ridecounters.traincarts.SignActionRidecount
+import be.mrtibo.ridecounters.hooks.Hook
+import be.mrtibo.ridecounters.listeners.JoinListener
+import be.mrtibo.ridecounters.hooks.traincarts.SignActionRidecount
+import be.mrtibo.ridecounters.hooks.traincarts.TrainCartsHook
 import be.mrtibo.ridecounters.update.UpdateChecker
 import com.bergerkiller.bukkit.tc.signactions.SignAction
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -31,8 +33,7 @@ import kotlin.coroutines.CoroutineContext
 
 class Ridecounters : JavaPlugin(), CoroutineScope {
 
-    private val signActionRidecount = SignActionRidecount()
-
+    private val enabledHooks = mutableSetOf<Hook>()
 
     override val coroutineContext: CoroutineContext
         get() = SupervisorJob() + Dispatchers.Default
@@ -83,11 +84,14 @@ class Ridecounters : JavaPlugin(), CoroutineScope {
         }
 
         /*
-        Register TrainCarts sign
+         * Hooks
          */
-        SignAction.register(signActionRidecount)
+        AVAILABLE_HOOKS.filter { it.canEnable }.forEach {
+            it.enable()
+            enabledHooks += it
+        }
 
-        Bukkit.getPluginManager().registerEvents(JoinEvent(), this)
+        Bukkit.getPluginManager().registerEvents(JoinListener(), this)
 
         val updateChecker = config.getBoolean("check_for_updates", true)
         val pluginId = 29184
@@ -111,10 +115,8 @@ class Ridecounters : JavaPlugin(), CoroutineScope {
     }
 
     override fun onDisable() {
-        /*
-        Unregister TrainCarts sign
-         */
-        SignAction.unregister(signActionRidecount)
+        enabledHooks.forEach { it.disable() }
+        enabledHooks.clear()
 
         Database.shutdown()
 
@@ -129,6 +131,9 @@ class Ridecounters : JavaPlugin(), CoroutineScope {
         lateinit var commandManager : PaperCommandManager<Source>
         lateinit var mainThreadDispatcher: CoroutineDispatcher
         lateinit var asyncDispatcher: CoroutineDispatcher
+
+        private val AVAILABLE_HOOKS = listOf(TrainCartsHook)
+
     }
 
 }

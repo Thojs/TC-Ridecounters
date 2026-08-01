@@ -1,4 +1,4 @@
-package be.mrtibo.ridecounters.events
+package be.mrtibo.ridecounters.listeners
 
 import be.mrtibo.ridecounters.Ridecounters
 import be.mrtibo.ridecounters.data.Database
@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 
-class JoinEvent: Listener {
+class JoinListener : Listener {
 
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
